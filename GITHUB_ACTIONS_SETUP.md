@@ -47,8 +47,19 @@ Set these in Azure App Service configuration instead of keeping production value
 - `JwtSettings__AccessTokenExpirationMinutes`
 - `JwtSettings__RefreshTokenExpirationDays`
 
+For this project, the currently used runtime keys are:
+
+- `ConnectionStrings__DefaultConnection`
+- `Jwt__Key`
+- `Jwt__Issuer`
+- `Jwt__Audience`
+- `Jwt__AccessTokenMinutes`
+- `Jwt__RefreshTokenDays`
+- `SeedData__Enabled`
+
 ## Notes
 
 - If Azure variable or secret is missing, the workflow still builds successfully and skips deployment.
 - Pull requests run build validation only.
 - The deployment job uses the published output from `staffnex.Api`.
+- Seed data is disabled by default outside development. Enable `SeedData__Enabled=true` only when you intentionally want demo users inserted.

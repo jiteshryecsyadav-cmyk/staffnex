@@ -101,7 +101,12 @@ using (var scope = app.Services.CreateScope())
     var services = scope.ServiceProvider;
     var dbContext = services.GetRequiredService<AppDbContext>();
     dbContext.Database.Migrate();
-    await AppDbSeeder.SeedAsync(dbContext);
+
+    var shouldSeedData = app.Environment.IsDevelopment() || app.Configuration.GetValue<bool>("SeedData:Enabled");
+    if (shouldSeedData)
+    {
+        await AppDbSeeder.SeedAsync(dbContext);
+    }
 }
 
 // Configure the HTTP request pipeline.
