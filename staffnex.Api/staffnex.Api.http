@@ -1,0 +1,6 @@
+@staffnex.Api_HostAddress = http://localhost:5128
+
+GET {{staffnex.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

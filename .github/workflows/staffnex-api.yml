@@ -1,0 +1,75 @@
+name: staffnex-api
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+env:
+  DOTNET_VERSION: 8.0.x
+  SOLUTION_PATH: demo staffnex.sln
+  PROJECT_PATH: staffnex.Api/staffnex.Api.csproj
+  PUBLISH_OUTPUT: publish-output
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore solution
+        run: dotnet restore "${{ env.SOLUTION_PATH }}"
+
+      - name: Build solution
+        run: dotnet build "${{ env.SOLUTION_PATH }}" --configuration Release --no-restore
+
+      - name: Publish API
+        run: dotnet publish "${{ env.PROJECT_PATH }}" --configuration Release --no-build --output "${{ env.PUBLISH_OUTPUT }}"
+
+      - name: Upload publish artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: staffnex-api-publish
+          path: ${{ env.PUBLISH_OUTPUT }}
+          if-no-files-found: error
+
+  deploy-azure:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+    environment:
+      name: production
+
+    steps:
+      - name: Download publish artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: staffnex-api-publish
+          path: ${{ env.PUBLISH_OUTPUT }}
+
+      - name: Deploy to Azure Web App
+        if: vars.AZURE_WEBAPP_NAME != '' && secrets.AZURE_WEBAPP_PUBLISH_PROFILE != ''
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ vars.AZURE_WEBAPP_NAME }}
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: ${{ env.PUBLISH_OUTPUT }}
+
+      - name: Skip deploy when Azure settings are missing
+        if: vars.AZURE_WEBAPP_NAME == '' || secrets.AZURE_WEBAPP_PUBLISH_PROFILE == ''
+        run: |
+          echo "Azure deployment skipped."
+          echo "Set repository variable AZURE_WEBAPP_NAME and secret AZURE_WEBAPP_PUBLISH_PROFILE to enable deployment."

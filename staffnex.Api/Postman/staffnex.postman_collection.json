@@ -1,0 +1,211 @@
+{
+  "info": {
+    "name": "staffnex Attendance API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Postman collection for the staffnex Staff Attendance Management System API."
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5128" },
+    { "key": "adminUsername", "value": "admin" },
+    { "key": "adminPassword", "value": "Admin@123" },
+    { "key": "staffUsername", "value": "raj.staff" },
+    { "key": "staffPassword", "value": "Staff@123" },
+    { "key": "adminToken", "value": "" },
+    { "key": "refreshToken", "value": "" },
+    { "key": "staffToken", "value": "" },
+    { "key": "staffId", "value": "1" }
+  ],
+  "item": [
+    {
+      "name": "Auth - Admin Login",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"{{adminUsername}}\",\n  \"password\": \"{{adminPassword}}\",\n  \"role\": \"Admin\"\n}"
+        },
+        "url": "{{baseUrl}}/api/auth/login"
+      }
+    },
+    {
+      "name": "Auth - Staff Login",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"{{staffUsername}}\",\n  \"password\": \"{{staffPassword}}\",\n  \"role\": \"Staff\"\n}"
+        },
+        "url": "{{baseUrl}}/api/auth/login"
+      }
+    },
+    {
+      "name": "Auth - Refresh Token",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+        },
+        "url": "{{baseUrl}}/api/auth/refresh"
+      }
+    },
+    {
+      "name": "Auth - Logout",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+        },
+        "url": "{{baseUrl}}/api/auth/logout"
+      }
+    },
+    {
+      "name": "Staff - Get All",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+        ],
+        "url": "{{baseUrl}}/api/staff?page=1&pageSize=10&search=&departmentId=&isActive=true&sortBy=fullName&sortDirection=asc"
+      }
+    },
+    {
+      "name": "Staff - Get Departments",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+        ],
+        "url": "{{baseUrl}}/api/staff/departments"
+      }
+    },
+    {
+      "name": "Attendance - Check In",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{staffToken}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"staffId\": {{staffId}},\n  \"latitude\": 26.912434,\n  \"longitude\": 75.787270,\n  \"address\": \"Jaipur Office\"\n}"
+        },
+        "url": "{{baseUrl}}/api/attendance/checkin"
+      }
+    },
+    {
+      "name": "Attendance - Check Out",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{staffToken}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"staffId\": {{staffId}},\n  \"latitude\": 26.912500,\n  \"longitude\": 75.787300,\n  \"address\": \"Jaipur Office Exit\"\n}"
+        },
+        "url": "{{baseUrl}}/api/attendance/checkout"
+      }
+    },
+    {
+      "name": "Attendance - Today By Staff",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{staffToken}}" }
+        ],
+        "url": "{{baseUrl}}/api/attendance/today/{{staffId}}"
+      }
+    },
+    {
+      "name": "Location - Update",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{staffToken}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"staffId\": {{staffId}},\n  \"latitude\": 26.912600,\n  \"longitude\": 75.787350,\n  \"address\": \"Client Visit Route\"\n}"
+        },
+        "url": "{{baseUrl}}/api/location/update"
+      }
+    },
+    {
+      "name": "Report - Dashboard",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+        ],
+        "url": "{{baseUrl}}/api/report/dashboard"
+      }
+    },
+    {
+      "name": "Report - Monthly Performance",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+        ],
+        "url": "{{baseUrl}}/api/report/performance?year=2026&month=4"
+      }
+    },
+    {
+      "name": "Leave - Create",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{staffToken}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"staffId\": {{staffId}},\n  \"leaveDate\": \"2026-04-10T00:00:00Z\",\n  \"reason\": \"Medical appointment\"\n}"
+        },
+        "url": "{{baseUrl}}/api/leave-requests"
+      }
+    },
+    {
+      "name": "Leave - Get My Requests",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{staffToken}}" }
+        ],
+        "url": "{{baseUrl}}/api/leave-requests?page=1&pageSize=10&status=Pending&sortBy=leaveDate&sortDirection=desc"
+      }
+    },
+    {
+      "name": "Leave - Approve",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"remarks\": \"Approved for medical leave\"\n}"
+        },
+        "url": "{{baseUrl}}/api/leave-requests/1/approve"
+      }
+    }
+  ]
+}
