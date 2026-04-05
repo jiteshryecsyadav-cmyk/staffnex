@@ -56,6 +56,33 @@ For this project, the currently used runtime keys are:
 - `Jwt__AccessTokenMinutes`
 - `Jwt__RefreshTokenDays`
 - `SeedData__Enabled`
+- `Cors__AllowedOrigins__0`
+- `Cors__AllowedOrigins__1`
+
+## Exact Azure App Service checklist
+
+Use this exact setup in Azure Portal for production:
+
+1. Create an App Service using the `.NET 8 (LTS)` runtime.
+2. Create or attach the SQL Server database the API should use.
+3. In Azure Portal, open `Configuration` and add these application settings:
+  - `ASPNETCORE_ENVIRONMENT=Production`
+  - `ConnectionStrings__DefaultConnection=Server=<server>;Database=staffnexAttendanceDb;User Id=<user>;Password=<password>;TrustServerCertificate=True;MultipleActiveResultSets=True`
+  - `Jwt__Key=<strong-random-secret-at-least-32-characters>`
+  - `Jwt__Issuer=staffnex`
+  - `Jwt__Audience=staffnex-clients`
+  - `Jwt__AccessTokenMinutes=60`
+  - `Jwt__RefreshTokenDays=7`
+  - `SeedData__Enabled=false`
+  - `Cors__AllowedOrigins__0=https://your-frontend-domain.com`
+  - `Cors__AllowedOrigins__1=https://www.your-frontend-domain.com`
+4. Keep `ConnectionStrings__DefaultConnection` in `Application settings` unless you also change the code to read Azure connection-string providers differently.
+5. Download the publish profile from the App Service `Overview` page.
+6. In GitHub repository settings, add:
+  - variable `AZURE_WEBAPP_NAME` with the exact Web App name
+  - secret `AZURE_WEBAPP_PUBLISH_PROFILE` with the full publish profile XML
+7. Push to `main` or run the Actions workflow manually.
+8. After deployment, confirm login, database connectivity, and browser access from only the configured frontend origins.
 
 ## Notes
 
@@ -63,3 +90,4 @@ For this project, the currently used runtime keys are:
 - Pull requests run build validation only.
 - The deployment job uses the published output from `staffnex.Api`.
 - Seed data is disabled by default outside development. Enable `SeedData__Enabled=true` only when you intentionally want demo users inserted.
+- CORS is configuration-driven. In Azure App Service, add allowed browser origins with indexed keys like `Cors__AllowedOrigins__0`.

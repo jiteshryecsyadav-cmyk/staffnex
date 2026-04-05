@@ -10,9 +10,28 @@ using staffnex.Api.DTOs;
 using staffnex.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+var corsOrigins = builder.Configuration
+    .GetSection("Cors:AllowedOrigins")
+    .Get<string[]>()?
+    .Where(origin => !string.IsNullOrWhiteSpace(origin))
+    .Select(origin => origin.Trim().TrimEnd('/'))
+    .Distinct(StringComparer.OrdinalIgnoreCase)
+    .ToArray() ?? Array.Empty<string>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddControllers();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("ConfiguredOrigins", policy =>
+    {
+        if (corsOrigins.Length > 0)
+        {
+            policy.WithOrigins(corsOrigins)
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        }
+    });
+});
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
     options.InvalidModelStateResponseFactory = context =>
@@ -139,6 +158,11 @@ app.UseExceptionHandler(handler =>
 });
 
 app.UseHttpsRedirection();
+
+if (corsOrigins.Length > 0)
+{
+    app.UseCors("ConfiguredOrigins");
+}
 
 app.UseAuthentication();
 app.UseAuthorization();
