@@ -21,6 +21,7 @@ staffnex.Api/appsettings.Production.json
 
 # Published artifacts
 publish-output/
+publish/
 
 # Test and coverage artifacts
 TestResults/

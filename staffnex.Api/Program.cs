@@ -167,6 +167,7 @@ if (corsOrigins.Length > 0)
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.MapGet("/health", () => Results.Ok(new { status = "ok" })).AllowAnonymous();
 app.MapControllers();
 
 app.Run();

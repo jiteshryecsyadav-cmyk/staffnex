@@ -1,0 +1,16 @@
+[Unit]
+Description=staffnex API
+After=network.target
+
+[Service]
+WorkingDirectory=/var/www/staffnex-api
+ExecStart=/usr/bin/dotnet /var/www/staffnex-api/staffnex.Api.dll
+Restart=always
+RestartSec=10
+KillSignal=SIGINT
+SyslogIdentifier=staffnex-api
+User=www-data
+EnvironmentFile=/etc/staffnex-api/staffnex-api.env
+
+[Install]
+WantedBy=multi-user.target
