@@ -130,6 +130,7 @@ create_env_file() {
         echo "Jwt__AccessTokenMinutes=60"
         echo "Jwt__RefreshTokenDays=7"
         echo "SeedData__Enabled=false"
+        echo "Swagger__Enabled=true"
     } > "${ENV_FILE}"
 
     if [ -n "${cors_origins}" ]; then

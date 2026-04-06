@@ -10,6 +10,7 @@ using staffnex.Api.DTOs;
 using staffnex.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+var swaggerEnabled = builder.Environment.IsDevelopment() || builder.Configuration.GetValue<bool>("Swagger:Enabled");
 var corsOrigins = builder.Configuration
     .GetSection("Cors:AllowedOrigins")
     .Get<string[]>()?
@@ -129,7 +130,7 @@ using (var scope = app.Services.CreateScope())
 }
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+if (swaggerEnabled)
 {
     app.UseSwagger();
     app.UseSwaggerUI();

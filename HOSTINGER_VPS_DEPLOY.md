@@ -34,3 +34,9 @@ journalctl -u staffnex-api -n 100 --no-pager
 curl http://127.0.0.1:5000/health
 curl http://YOUR_SERVER_IP/health
 ```
+
+Swagger is enabled in the generated production environment file, so after deployment you can open:
+
+```bash
+http://YOUR_SERVER_IP/swagger
+```
