@@ -63,6 +63,17 @@ escape_env_value() {
     printf '%s' "$1" | sed 's/\\/\\\\/g; s/"/\\"/g'
 }
 
+contains_placeholder() {
+    case "$1" in
+        *YOUR_*|*your_*|*YOUR-*|*your-*|*example*|*EXAMPLE*)
+            return 0
+            ;;
+        *)
+            return 1
+            ;;
+    esac
+}
+
 create_env_file() {
     mkdir -p "${ENV_DIR}"
 
@@ -72,13 +83,32 @@ create_env_file() {
     fi
 
     echo "Create production configuration for staffnex API"
-    read -r -p "SQL Server connection string: " connection_string
+    while true; do
+        read -r -p "SQL Server connection string: " connection_string
+        if [ -z "${connection_string}" ]; then
+            echo "Connection string cannot be empty."
+            continue
+        fi
+
+        if contains_placeholder "${connection_string}"; then
+            echo "Connection string still contains placeholder text. Enter the real production value."
+            continue
+        fi
+
+        break
+    done
 
     jwt_key=""
     while [ "${#jwt_key}" -lt 32 ]; do
         read -r -p "JWT key (minimum 32 characters): " jwt_key
         if [ "${#jwt_key}" -lt 32 ]; then
             echo "JWT key too short. Try again."
+            continue
+        fi
+
+        if contains_placeholder "${jwt_key}" || printf '%s' "${jwt_key}" | grep -q ';'; then
+            echo "JWT key looks invalid. Enter only the JWT secret, not a connection string or placeholder text."
+            jwt_key=""
         fi
     done
 
